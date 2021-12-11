@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite::resource:static/yyets.db
+  mvc:
+    view:
+      suffix: .html
+      prefix: /
+    static-path-pattern: /**
+logging:
+  level:
+    root: info
+  file:
+    name: /var/logs/yyets-history.log
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+server:
+  port: 9000
