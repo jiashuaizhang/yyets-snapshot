@@ -9,10 +9,10 @@
 ##### 效果展示
 
 1. 剧目检索
-  ![yyets-1](./images/yyets-1.png)
+  ![yyets-1](./static/yyets-1.png)
   
 2. 复制链接
-  ![yyets-2](./images/yyets-2.png)
+  ![yyets-2](./static/yyets-2.png)
   
 3. 查看链接
-  ![yyets-3](./images/yyets-3.png)
+  ![yyets-3](./static/yyets-3.png)
