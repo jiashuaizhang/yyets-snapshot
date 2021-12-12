@@ -6,7 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 
 /yyets-history/target/
-
+yyets.db
 .idea
 .vscode
 *.suo
