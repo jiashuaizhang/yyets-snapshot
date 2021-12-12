@@ -3,7 +3,7 @@
     <div class="grid-content bg-purple-light div-content">
       <el-form :inline="true" :model="searchForm" class="demo-form-inline">
         <el-form-item label="剧目:" class="form-item">
-          <el-input v-model="searchForm.name" placeholder="剧目"></el-input>
+          <el-input v-model="searchForm.name" placeholder="剧目" keyup.enter=""></el-input>
         </el-form-item>
         <el-form-item class="form-item">
           <el-button type="primary" :loading="loading" @click="onSubmit">查询</el-button>
@@ -13,7 +13,7 @@
     <div>
       <el-table
         :data="tableData"
-        height="250"
+        :height="tableHeight"
         border
         style="width: 100%">
         <el-table-column
@@ -43,14 +43,15 @@
           width="350">
           <template slot-scope="scope">
             <el-button type="text" size="small" style="margin-left: 10px"
-            v-for="(item, i) in scope.row.seasons"
-            @click="viewSeason(scope.row, i)" :key="`${scope.row.id}${i}`">{{ item.name }}</el-button>
+                       v-for="(item, i) in scope.row.seasons"
+                       @click="viewSeason(scope.row, i)" :key="`${scope.row.id}${i}`">{{ item.name }}
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="750px">
-      <el-form  :inline="true" class="demo-form-inline">
+      <el-form :inline="true" class="demo-form-inline">
         <el-form-item label="资源分组:" class="form-item">
           <el-select placeholder="资源分组" v-model="linkGroup" :change="linkGroupChange(linkGroup)">
             <el-option
@@ -81,12 +82,13 @@
         <el-table-column
           fixed="right"
           label="操作"
-          >
+        >
           <template slot-scope="scope">
             <el-button type="text" size="small" style="margin-left: 10px"
                        v-for="(item, i) in scope.row.links"
                        @click="dealLink(scope.row, i)"
-                       :key="`${resourceRow.id}${scope.row.episode}${i}`">{{ item.way }}</el-button>
+                       :key="`${resourceRow.id}${scope.row.episode}${i}`">{{ item.way }}
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -112,7 +114,8 @@
         tableData: [],
         dialogTitle: '资源列表',
         linkGroup: 0,
-        operationType: 0
+        operationType: 0,
+        tableHeight: window.screen.height - 290
       }
     },
     methods: {
@@ -128,14 +131,14 @@
         this.dialogVisible = true;
       },
       linkGroupChange(linkGroup) {
-        if(!this.resourceRow.seasons || this.resourceRow.seasons.length === 0) {
+        if (!this.resourceRow.seasons || this.resourceRow.seasons.length === 0) {
           return;
         }
         this.resourceLinksTableData = this.resourceLinks[linkGroup].items;
       },
       copyLink(link) {
         let hiddenLink = document.getElementById('hiddenLink');
-        if(!hiddenLink) {
+        if (!hiddenLink) {
           hiddenLink = document.createElement('textarea');
           hiddenLink.style.display = 'none';
           hiddenLink.id = 'hiddenLink';
@@ -151,7 +154,7 @@
       dealLink(row, i) {
         let link = row.links[i].address;
         console.log(link);
-        if(this.operationType === 0) {
+        if (this.operationType === 0) {
           this.copyLink(link);
         } else {
           this.$alert(`<textarea style="width:380px;height:60px;">${link}</textarea>`, '查看链接', {
@@ -160,7 +163,7 @@
         }
       },
       onSubmit() {
-        if(!this.searchForm.name) {
+        if (!this.searchForm.name) {
           this.$message({
             message: '请输入剧目',
             type: 'warning'
@@ -182,14 +185,23 @@
           this.$message.error('查询失败');
         });
       }
+    },
+    created() {
+      document.onkeydown = e => {
+        let keyCode = e.code;
+        if (keyCode === 'Enter') {
+          this.onSubmit();
+        }
+      }
     }
-  };
+  }
 </script>
 <style>
   .div-content {
     margin-top: 20px;
     width: 100%;
   }
+
   .form-item {
     margin-left: 20px;
     float: left;

@@ -8,16 +8,14 @@ import cn.hutool.db.PageResult;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zhangjiashuai.yyetshistory.config.YyetsHistoryProperties;
 import com.zhangjiashuai.yyetshistory.entity.Resource;
 import com.zhangjiashuai.yyetshistory.entity.ResourceDO;
 import com.zhangjiashuai.yyetshistory.repository.ResourceRepository;
 import com.zhangjiashuai.yyetshistory.service.ResourceService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,9 +23,13 @@ public class ResourceServiceImpl implements ResourceService {
 
     private ResourceRepository  resourceRepository;
 
-    public ResourceServiceImpl(ResourceRepository  resourceRepository) {
+    private YyetsHistoryProperties configProperties;
+
+    public ResourceServiceImpl(ResourceRepository resourceRepository, YyetsHistoryProperties configProperties) {
         this.resourceRepository = resourceRepository;
+        this.configProperties = configProperties;
     }
+
     @Override
     public ResourceDO findById(long id) {
         return resourceRepository.findById(id);
@@ -62,7 +64,7 @@ public class ResourceServiceImpl implements ResourceService {
             throw new NullPointerException("info is null");
         }
         Resource resource = new Resource();
-        resource.setName(infoJson.getString("cnname"));
+        resource.setName(resourceDO.getName());
         resource.setNameEN(infoJson.getString("enname"));
         resource.setChannel(infoJson.getString("channel_cn"));
         resource.setArea(infoJson.getString("area"));
@@ -109,7 +111,8 @@ public class ResourceServiceImpl implements ResourceService {
                     for (int k = 0; k < filesArray.size(); k++) {
                         JSONObject fileJson = filesArray.getJSONObject(k);
                         String way = fileJson.getString("way_cn");
-                        if(!"电驴".equals(way) && !"磁力".equals(way)) {
+                        LinkedHashSet<String> linkWayFilter = configProperties.getLinkWayFilter();
+                        if(!linkWayFilter.contains(way)) {
                             continue;
                         }
                         String address = fileJson.getString("address");
@@ -169,6 +172,6 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public PageResult<ResourceDO> selectDOPage(String name, int pageNo) {
-        return resourceRepository.selectPage(name, pageNo);
+        return resourceRepository.selectPage(name, pageNo, configProperties.getDefaultPageSize());
     }
 }

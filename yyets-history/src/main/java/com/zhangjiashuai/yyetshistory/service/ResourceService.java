@@ -31,7 +31,9 @@ public interface ResourceService {
 
     default PageResult<Resource> selectPage(String name, int pageNo) {
         PageResult<ResourceDO> doPageResult = selectDOPage(name, pageNo);
-        return doPageResult.stream().map(this::parseResource).collect(Collectors.toCollection(PageResult::new));
+        PageResult<Resource> pageResult = new PageResult<>(doPageResult.getPage(), doPageResult.getPageSize(), doPageResult.getTotal());
+        doPageResult.stream().map(this::parseResource).forEach(pageResult::add);
+        return pageResult;
     }
 
 }

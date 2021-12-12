@@ -19,3 +19,8 @@ mybatis-plus:
     map-underscore-to-camel-case: true
 server:
   port: 9000
+yyets-history:
+  link-way-filter: #保留的链接类型
+    - 电驴
+    - 磁力
+  default-page-size: 20 #默认的查询数量

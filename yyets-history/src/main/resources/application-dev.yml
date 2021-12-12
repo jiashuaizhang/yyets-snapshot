@@ -2,7 +2,7 @@ logging:
   level:
     root: info
   file:
-    name: workspace/logs/yyets-history.log
+    name: logs/yyets-history.log
 #mybatis-plus:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
