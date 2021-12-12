@@ -1,9 +1,9 @@
 <template>
   <div style="border: 1px solid #eee">
     <div class="grid-content bg-purple-light div-content">
-      <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+      <el-form :inline="true" :model="searchForm" class="demo-form-inline" @submit.native.prevent>
         <el-form-item label="剧目:" class="form-item">
-          <el-input v-model="searchForm.name" placeholder="剧目" keyup.enter=""></el-input>
+          <el-input v-model="searchForm.name" placeholder="剧目"></el-input>
         </el-form-item>
         <el-form-item class="form-item">
           <el-button type="primary" :loading="loading" @click="onSubmit">查询</el-button>
@@ -127,7 +127,7 @@
         let defaultIndex = this.resourceLinks.findIndex(link => link.name === 'HR-HDTV'
           || link.name === 'MP4');
         this.linkGroup = defaultIndex > -1 ? defaultIndex : 0;
-        this.resourceLinksTableData = this.resourceLinks[0].items;
+        this.resourceLinksTableData = this.resourceLinks[this.linkGroup].items;
         this.dialogVisible = true;
       },
       linkGroupChange(linkGroup) {
