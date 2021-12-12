@@ -11,7 +11,7 @@ public interface ResourceService {
 
     ResourceDO findById(long id);
 
-    List<ResourceDO> findByName(String name);
+    List<ResourceDO> findByNameLike(String name);
 
     ResourceDO findOneByName(String name);
 
@@ -23,7 +23,7 @@ public interface ResourceService {
 
     Resource getResourceById(long id);
 
-    List<Resource> getResourcesByName(String name);
+    List<Resource> getResourceByNameLike(String name);
 
     List<Resource> getAllResources();
 

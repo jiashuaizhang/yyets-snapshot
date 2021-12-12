@@ -33,7 +33,7 @@ class YyetsHistoryApplicationTests {
 
     @Test
     public void jdbcTemplateTest() {
-        List<ResourceDO> resources = resourceRepository.findByName("绝命律师");
+        List<ResourceDO> resources = resourceRepository.findByNameLike("绝命律师");
         Assert.notEmpty(resources);
     }
 

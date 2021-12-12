@@ -1,8 +1,0 @@
-logging:
-  level:
-    root: info
-  file:
-    name: logs/yyets-history.log
-#mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

@@ -36,8 +36,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<ResourceDO> findByName(String name) {
-        return resourceRepository.findByName(name);
+    public List<ResourceDO> findByNameLike(String name) {
+        return resourceRepository.findByNameLike(name);
     }
 
     @Override
@@ -153,8 +153,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Resource> getResourcesByName(String name) {
-        List<ResourceDO> resourceDOList = findByName(name);
+    public List<Resource> getResourceByNameLike(String name) {
+        List<ResourceDO> resourceDOList = findByNameLike(name);
         if (CollectionUtil.isEmpty(resourceDOList)) {
             return Collections.emptyList();
         }

@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: dev
   datasource:
     driver-class-name: org.sqlite.JDBC
     url: jdbc:sqlite::resource:static/yyets.db
@@ -13,10 +11,11 @@ logging:
   level:
     root: info
   file:
-    name: /var/logs/yyets-history.log
+    name: logs/yyets-history.log
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 server:
   port: 9000
 yyets-history:

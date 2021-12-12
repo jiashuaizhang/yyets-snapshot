@@ -1,6 +1,5 @@
 package com.zhangjiashuai.yyetshistory.controller;
 
-import cn.hutool.db.Page;
 import cn.hutool.db.PageResult;
 import com.zhangjiashuai.yyetshistory.entity.Resource;
 import com.zhangjiashuai.yyetshistory.service.ResourceService;

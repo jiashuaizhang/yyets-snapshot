@@ -137,11 +137,12 @@
         this.resourceLinksTableData = this.resourceLinks[linkGroup].items;
       },
       copyLink(link) {
-        let hiddenLink = document.getElementById('hiddenLink');
+        let textareaId = 'hiddenLink';
+        let hiddenLink = document.getElementById(textareaId);
         if (!hiddenLink) {
           hiddenLink = document.createElement('textarea');
           hiddenLink.style.display = 'none';
-          hiddenLink.id = 'hiddenLink';
+          hiddenLink.id = textareaId;
         }
         hiddenLink.value = link;
         hiddenLink.select();
