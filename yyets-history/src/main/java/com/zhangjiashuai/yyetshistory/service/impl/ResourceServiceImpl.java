@@ -4,50 +4,41 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.db.PageResult;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zhangjiashuai.yyetshistory.config.YyetsHistoryProperties;
 import com.zhangjiashuai.yyetshistory.entity.Resource;
 import com.zhangjiashuai.yyetshistory.entity.ResourceDO;
-import com.zhangjiashuai.yyetshistory.repository.ResourceRepository;
+import com.zhangjiashuai.yyetshistory.repository.ResourceMapper;
 import com.zhangjiashuai.yyetshistory.service.ResourceService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ResourceServiceImpl implements ResourceService {
 
-    private ResourceRepository  resourceRepository;
+    private ResourceMapper resourceMapper;
 
-    private YyetsHistoryProperties configProperties;
+    private YyetsHistoryProperties config;
 
-    public ResourceServiceImpl(ResourceRepository resourceRepository, YyetsHistoryProperties configProperties) {
-        this.resourceRepository = resourceRepository;
-        this.configProperties = configProperties;
-    }
-
-    @Override
-    public ResourceDO findById(long id) {
-        return resourceRepository.findById(id);
+    public ResourceServiceImpl(ResourceMapper resourceMapper, YyetsHistoryProperties configProperties) {
+        this.resourceMapper = resourceMapper;
+        this.config = configProperties;
     }
 
     @Override
     public List<ResourceDO> findByNameLike(String name) {
-        return resourceRepository.findByNameLike(name);
+        return resourceMapper.selectByNameLike(name);
     }
 
     @Override
-    public ResourceDO findOneByName(String name) {
-        return resourceRepository.findOneByName(name);
-    }
-
-    @Override
-    public List<ResourceDO> findAll() {
-        return resourceRepository.findAll();
+    public long countByNameLike(String name) {
+        return resourceMapper.countByNameLike(name);
     }
 
     @Override
@@ -111,7 +102,7 @@ public class ResourceServiceImpl implements ResourceService {
                     for (int k = 0; k < filesArray.size(); k++) {
                         JSONObject fileJson = filesArray.getJSONObject(k);
                         String way = fileJson.getString("way_cn");
-                        LinkedHashSet<String> linkWayFilter = configProperties.getLinkWayFilter();
+                        LinkedHashSet<String> linkWayFilter = config.getLinkWayFilter();
                         if(!linkWayFilter.contains(way)) {
                             continue;
                         }
@@ -135,43 +126,14 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Resource getResourceByName(String name) {
-        ResourceDO resourceDO = findOneByName(name);
-        if(resourceDO == null) {
-            return null;
-        }
-        return parseResource(resourceDO);
+    public PageInfo<Resource> selectPage(String name, int pageNo, int pageSize) {
+        Page<ResourceDO> page = PageHelper.<ResourceDO>startPage(pageNo, pageSize).doSelectPage(() -> findByNameLike(name));
+        return page.toPageInfo(this::parseResource);
     }
 
     @Override
-    public Resource getResourceById(long id) {
-        ResourceDO resourceDO = findById(id);
-        if(resourceDO == null) {
-            return null;
-        }
-        return parseResource(resourceDO);
+    public PageInfo<Resource> selectPage(String name, int pageNo) {
+        return selectPage(name, pageNo, config.getDefaultPageSize());
     }
 
-    @Override
-    public List<Resource> getResourceByNameLike(String name) {
-        List<ResourceDO> resourceDOList = findByNameLike(name);
-        if (CollectionUtil.isEmpty(resourceDOList)) {
-            return Collections.emptyList();
-        }
-        return resourceDOList.stream().map(this::parseResource).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Resource> getAllResources() {
-        List<ResourceDO> resourceDOList = findAll();
-        if (CollectionUtil.isEmpty(resourceDOList)) {
-            return Collections.emptyList();
-        }
-        return resourceDOList.stream().map(this::parseResource).collect(Collectors.toList());
-    }
-
-    @Override
-    public PageResult<ResourceDO> selectDOPage(String name, int pageNo) {
-        return resourceRepository.selectPage(name, pageNo, configProperties.getDefaultPageSize());
-    }
 }

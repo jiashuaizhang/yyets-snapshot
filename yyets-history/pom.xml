@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.zhangjiashuai</groupId>
     <artifactId>yyets-history</artifactId>
-    <version>1.1</version>
+    <version>2.0</version>
     <name>yyets-history</name>
     <description>a yyets history snapshot</description>
     <properties>
@@ -62,6 +62,11 @@
             <groupId>org.tukaani</groupId>
             <artifactId>xz</artifactId>
             <version>1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

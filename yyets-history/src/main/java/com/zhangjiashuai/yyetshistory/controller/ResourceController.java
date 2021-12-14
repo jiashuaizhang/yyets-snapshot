@@ -1,11 +1,10 @@
 package com.zhangjiashuai.yyetshistory.controller;
 
-import cn.hutool.db.PageResult;
+import com.github.pagehelper.PageInfo;
 import com.zhangjiashuai.yyetshistory.entity.Resource;
 import com.zhangjiashuai.yyetshistory.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,10 +19,9 @@ public class ResourceController {
 
     private ResourceService resourceService;
 
-    @GetMapping("/page/{pageNo}/{name}")
-    public PageResult<Resource> selectPage(@PathVariable("name") String name,
-                                           @PathVariable("pageNo") int pageNo) {
-        PageResult<Resource> resources = resourceService.selectPage(name, pageNo);
+    @GetMapping("/page")
+    public PageInfo<Resource> selectPage(String name, int pageNo) {
+        PageInfo<Resource> resources = resourceService.selectPage(name, pageNo);
         log.info("查询成功, name: {}, pageNo: {}, pageSize: {}, total: {}",
                 name, pageNo, resources.getPageSize(), resources.getTotal());
         return resources;

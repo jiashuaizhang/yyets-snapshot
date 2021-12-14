@@ -4,10 +4,10 @@ import lombok.Data;
 
 import java.util.LinkedHashSet;
 
-import static com.zhangjiashuai.yyetshistory.repository.ResourceRepository.DEFAULT_PAGE_SIZE;
-
 @Data
 public class YyetsHistoryProperties {
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
     /**
      * 保留的链接类型
      */

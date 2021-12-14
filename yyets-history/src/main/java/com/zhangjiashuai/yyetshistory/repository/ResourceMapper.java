@@ -1,36 +1,31 @@
-package com.zhangjiashuai.yyetshistory.repository.impl;
+package com.zhangjiashuai.yyetshistory.repository;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.zhangjiashuai.yyetshistory.entity.ResourceDO;
-import com.zhangjiashuai.yyetshistory.repository.ResourceRepository;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-public interface ResourceMapper extends BaseMapper<ResourceDO>, ResourceRepository {
+public interface ResourceMapper extends BaseMapper<ResourceDO> {
 
     static LambdaQueryWrapper<ResourceDO> queryWrapperByNameLike(String name) {
         return Wrappers.<ResourceDO>lambdaQuery()
                 .like(ResourceDO::getName, name).orderByAsc(ResourceDO::getName);
     }
 
-    default int countByNameLike(String name) {
-        return selectCount(queryWrapperByNameLike(name)).intValue();
+    default long countByNameLike(String name) {
+        return selectCount(queryWrapperByNameLike(name));
     }
 
-    default List<ResourceDO> findByNameLike(String name) {
+    default List<ResourceDO> selectByNameLike(String name) {
         return selectList(queryWrapperByNameLike(name));
     }
 
-    default ResourceDO findById(long id) {
-        return selectById(id);
-    }
-
-    default ResourceDO findOneByName(String name) {
+    default ResourceDO selectOneByName(String name) {
         List<ResourceDO> list = selectList(Wrappers.<ResourceDO>lambdaQuery()
                 .eq(ResourceDO::getName, name));
         if(CollectionUtil.isEmpty(list)) {
@@ -39,7 +34,8 @@ public interface ResourceMapper extends BaseMapper<ResourceDO>, ResourceReposito
         return list.get(0);
     }
 
-    default List<ResourceDO> findAll() {
+    default List<ResourceDO> selectAll() {
         return selectList(Wrappers.emptyWrapper());
     }
+
 }

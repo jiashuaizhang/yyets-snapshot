@@ -10,16 +10,18 @@ spring:
 logging:
   level:
     root: info
+    "com.zhangjiashuai.yyetshistory.repository.impl": debug
   file:
     name: logs/yyets-history.log
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+pagehelper:
+  dialect-alias: sqlite
 server:
   port: 9000
 yyets-history:
   link-way-filter: #保留的链接类型
     - 电驴
     - 磁力
-  default-page-size: 20 #默认的查询数量
+  default-page-size: 10 #默认的查询数量
