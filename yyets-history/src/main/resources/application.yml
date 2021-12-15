@@ -10,7 +10,7 @@ spring:
 logging:
   level:
     root: info
-    "com.zhangjiashuai.yyetshistory.repository.impl": debug
+#    "com.zhangjiashuai.yyetshistory.repository": debug
   file:
     name: logs/yyets-history.log
 mybatis-plus:

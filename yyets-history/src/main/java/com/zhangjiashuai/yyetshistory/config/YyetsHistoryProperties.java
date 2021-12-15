@@ -7,7 +7,9 @@ import java.util.LinkedHashSet;
 @Data
 public class YyetsHistoryProperties {
 
-    private static final int DEFAULT_PAGE_SIZE = 10;
+    public static final int DEFAULT_PAGE_SIZE = 10;
+    public static final int MAX_PAGE_SIZE = 100;
+
     /**
      * 保留的链接类型
      */

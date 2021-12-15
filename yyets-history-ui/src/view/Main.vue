@@ -3,17 +3,17 @@
     <div class="grid-content bg-purple-light div-content">
       <el-form :inline="true" :model="searchForm" class="demo-form-inline" @submit.native.prevent>
         <el-form-item label="剧目:" class="form-item">
-          <el-input v-model="searchForm.name" placeholder="剧目"></el-input>
+          <el-input v-model="searchForm.name" placeholder="剧目" @keyup.enter.native="search(true)"></el-input>
         </el-form-item>
         <el-form-item class="form-item">
-          <el-button type="primary" :loading="loading" @click="onSubmit">查询</el-button>
+          <el-button type="primary" :loading="loading" @click="search(true)">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div>
       <el-table
         :data="tableData"
-        :height="tableHeight"
+        height="75vh"
         border
         style="width: 100%">
         <el-table-column
@@ -50,7 +50,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="750px">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="750px" top="8vh">
       <el-form :inline="true" class="demo-form-inline">
         <el-form-item label="资源分组:" class="form-item">
           <el-select placeholder="资源分组" v-model="linkGroup" :change="linkGroupChange(linkGroup)">
@@ -75,7 +75,7 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <el-table :data="resourceLinksTableData" height="300px">
+      <el-table :data="resourceLinksTableData" height="330px">
         <el-table-column property="episode" label="分集" width="150"></el-table-column>
         <el-table-column property="name" label="文件名" width="200"></el-table-column>
         <el-table-column property="size" label="大小"></el-table-column>
@@ -93,19 +93,32 @@
         </el-table-column>
       </el-table>
     </el-dialog>
+    <el-pagination class="pagination"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="searchForm.pageNo"
+      :page-sizes="[10, 20, 30, 40, 50]"
+      :page-size="searchForm.pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      background
+      :total="total"
+      v-show="tableData.length > 0">
+    </el-pagination>
      <textarea id="hiddenLink" style="display: none"></textarea>
   </div>
 </template>
 
 <script>
-  const baseUri = '/resource/page/';
-  const pageNo = 1;
+  const baseUri = '/resource/page';
   export default {
     data() {
       return {
         searchForm: {
           name: '',
+          pageNo: 1,
+          pageSize: 10
         },
+        total: 0,
         loading: false,
         dialogVisible: false,
         resourceLinks: [],
@@ -114,11 +127,19 @@
         tableData: [],
         dialogTitle: '资源列表',
         linkGroup: 0,
-        operationType: 0,
-        tableHeight: window.screen.height - 290
+        operationType: 0
       }
     },
     methods: {
+      handleSizeChange(pageSize) {
+        this.searchForm.pageSize = pageSize;
+        this.searchForm.pageNo = 1;
+        this.search();
+      },
+      handleCurrentChange(pageNo) {
+        this.searchForm.pageNo = pageNo;
+        this.search();
+      },
       viewSeason(resource, i) {
         this.resourceRow = resource;
         let season = resource.seasons[i];
@@ -163,36 +184,37 @@
           });
         }
       },
-      onSubmit() {
-        if (!this.searchForm.name) {
-          this.$message({
-            message: '请输入剧目',
-            type: 'warning'
-          });
-          return;
+      search(newIn) {
+        if(newIn) {
+          this.searchForm.pageNo = 1;
         }
-        let uri = baseUri + pageNo + '/' + this.searchForm.name;
+        let queryParams = '';
+        let i = 0;
+        for (let key in this.searchForm) {
+          let prefix = i === 0 ? '?' : '&';
+          queryParams += `${prefix}${key}=${this.searchForm[key]}`;
+          i++;
+        }
+        let uri = baseUri + queryParams;
         this.loading = true;
         this.$axios.get(uri).then(response => {
           this.loading = false;
-          this.tableData = response.data;
-          this.$message({
-            message: '查询成功',
-            type: 'success'
-          });
+          let data = response.data;
+          this.tableData = data.list;
+          this.total = data.total;
+          this.searchForm.pageSize = data.pageSize;
+          this.searchForm.pageNo = data.pageNum;
+          if(newIn) {
+            this.$message({
+              message: '查询成功',
+              type: 'success'
+            });
+          }
         }).catch(error => {
           this.loading = false;
           console.dir(error);
           this.$message.error('查询失败');
         });
-      }
-    },
-    created() {
-      document.onkeydown = e => {
-        let keyCode = e.code;
-        if (keyCode === 'Enter') {
-          this.onSubmit();
-        }
       }
     }
   }
@@ -202,9 +224,12 @@
     margin-top: 20px;
     width: 100%;
   }
-
   .form-item {
     margin-left: 20px;
     float: left;
+  }
+  .pagination {
+    text-align: left;
+    margin-left: 5px;
   }
 </style>

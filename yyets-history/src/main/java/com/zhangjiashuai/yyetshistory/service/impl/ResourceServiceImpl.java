@@ -19,6 +19,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static com.zhangjiashuai.yyetshistory.config.YyetsHistoryProperties.MAX_PAGE_SIZE;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 @Service
 public class ResourceServiceImpl implements ResourceService {
 
@@ -62,7 +66,8 @@ public class ResourceServiceImpl implements ResourceService {
         resource.setId(infoJson.getLongValue("id"));
         JSONArray list = dataObject.getJSONArray("list");
         if(CollectionUtil.isEmpty(list)) {
-            throw new NullPointerException("list is null");
+            resource.setSeasons(Collections.emptyList());
+            return resource;
         }
         List<Resource.Season> seasons = new ArrayList<>(list.size());
         resource.setSeasons(seasons);
@@ -127,6 +132,8 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public PageInfo<Resource> selectPage(String name, int pageNo, int pageSize) {
+        pageNo = max(1, pageNo);
+        pageSize = min(max(1, pageSize), MAX_PAGE_SIZE);
         Page<ResourceDO> page = PageHelper.<ResourceDO>startPage(pageNo, pageSize).doSelectPage(() -> findByNameLike(name));
         return page.toPageInfo(this::parseResource);
     }

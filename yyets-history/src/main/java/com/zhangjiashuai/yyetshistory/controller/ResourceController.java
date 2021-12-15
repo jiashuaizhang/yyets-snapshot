@@ -6,6 +6,7 @@ import com.zhangjiashuai.yyetshistory.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -20,10 +21,11 @@ public class ResourceController {
     private ResourceService resourceService;
 
     @GetMapping("/page")
-    public PageInfo<Resource> selectPage(String name, int pageNo) {
-        PageInfo<Resource> resources = resourceService.selectPage(name, pageNo);
+    public PageInfo<Resource> selectPage(@RequestParam(required = false) String name,
+                @RequestParam int pageNo, @RequestParam int pageSize) {
+        PageInfo<Resource> resources = resourceService.selectPage(name, pageNo, pageSize);
         log.info("查询成功, name: {}, pageNo: {}, pageSize: {}, total: {}",
-                name, pageNo, resources.getPageSize(), resources.getTotal());
+                name, resources.getPageNum(), resources.getPageSize(), resources.getTotal());
         return resources;
     }
 }
