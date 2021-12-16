@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.zhangjiashuai</groupId>
     <artifactId>yyets-history</artifactId>
-    <version>2.0</version>
+    <version>2.1</version>
     <name>yyets-history</name>
     <description>a yyets history snapshot</description>
     <properties>

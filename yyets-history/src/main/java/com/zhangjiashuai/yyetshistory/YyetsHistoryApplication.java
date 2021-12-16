@@ -1,5 +1,6 @@
 package com.zhangjiashuai.yyetshistory;
 
+import com.zhangjiashuai.yyetshistory.util.NativeOperationUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,7 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class YyetsHistoryApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(YyetsHistoryApplication.class, args);
+        if(NativeOperationUtils.onStartPrepare(args)) {
+            SpringApplication.run(YyetsHistoryApplication.class, args);
+        }
     }
 
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.net.URLDecoder;
 import cn.hutool.extra.compress.extractor.SevenZExtractor;
+import cn.hutool.extra.spring.EnableSpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -17,8 +18,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.StandardCopyOption;
 
+
 @Slf4j
 @Configuration
+@EnableSpringUtil
 public class AppConfig {
 
     @Bean

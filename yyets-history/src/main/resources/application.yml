@@ -10,7 +10,7 @@ spring:
 logging:
   level:
     root: info
-#    "com.zhangjiashuai.yyetshistory.repository": debug
+  #    "com.zhangjiashuai.yyetshistory.repository": debug
   file:
     name: logs/yyets-history.log
 mybatis-plus:
@@ -25,3 +25,4 @@ yyets-history:
     - 电驴
     - 磁力
   default-page-size: 10 #默认的查询数量
+  host: localhost # 域名
