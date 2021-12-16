@@ -10,8 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static cn.hutool.core.text.StrPool.COMMA;
-import static cn.hutool.core.text.StrPool.DOT;
+import static cn.hutool.core.text.StrPool.*;
 
 @Slf4j
 class NativeYamlUtil {
@@ -36,6 +35,7 @@ class NativeYamlUtil {
         loadConfigYaml(null);
         Object configValue = PROPERTIES.get("spring.profiles.active");
         if(configValue == null) {
+            loadSystemProperties();
             return;
         }
         Collection<String> activeProfiles;
@@ -54,7 +54,6 @@ class NativeYamlUtil {
                 log.debug("yaml加载异常, profile: {}", profile, e);
             }
         }
-        // 尝试获取环境变量与jvm参数
         loadSystemProperties();
     }
 
@@ -73,18 +72,29 @@ class NativeYamlUtil {
             if(array.length != 2 || StrUtil.isBlank(array[0])) {
                 continue;
             }
-            PROPERTIES.put(array[0], array[1]);
+            PROPERTIES.put(array[0].trim(), StrUtil.trim(array[1]));
         }
     }
+
+    /**
+     * 尝试获取系统变量与jvm参数
+     */
     private static void loadSystemProperties() {
         for (Map.Entry<String, Object> entry : PROPERTIES.entrySet()) {
             String key = entry.getKey();
             String newValue;
-            if(StrUtil.isBlank(newValue = System.getenv(key))) {
+            if((newValue = System.getenv(key)) != null) {
+                if(newValue.contains(UNDERLINE)) {
+                    newValue = Arrays.stream(newValue.split(UNDERLINE)).map(String::toLowerCase)
+                            .collect(Collectors.joining(DOT));
+                } else {
+                    newValue = newValue.toLowerCase();
+                }
+            } else {
                 newValue = System.getProperty(key);
             }
-            if(StrUtil.isNotBlank(newValue)) {
-                entry.setValue(newValue);
+            if(newValue != null) {
+                entry.setValue(newValue.trim());
             }
         }
     }
