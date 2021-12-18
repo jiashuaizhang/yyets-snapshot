@@ -1,11 +1,27 @@
 package com.zhangjiashuai.yyetshistory.entity;
 
+import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 
+import java.util.Collections;
 import java.util.List;
 
 @Data
 public class Resource {
+
+    private static final Resource EMPTY_RESOURCE = new Resource() {
+
+        @Override
+        public void setSeasons(List<Season> seasons) {
+            throw new UnsupportedOperationException();
+        }
+
+        {
+            ReflectUtil.setFieldValue(this, "seasons", Collections.emptyList());
+        }
+    };
+
     private long id;
     private String name;
     private String nameEN;
@@ -32,7 +48,7 @@ public class Resource {
 
         @Override
         public int compareTo(Group that) {
-            return this.name.compareTo(that.name);
+            return StrUtil.compareIgnoreCase(this.name, that.name,false);
         }
     }
 
@@ -56,7 +72,11 @@ public class Resource {
 
         @Override
         public int compareTo(Link that) {
-            return this.way.compareTo(that.way);
+            return StrUtil.compareIgnoreCase(this.way, that.way,false);
         }
+    }
+
+    public static Resource emptyResource() {
+        return EMPTY_RESOURCE;
     }
 }

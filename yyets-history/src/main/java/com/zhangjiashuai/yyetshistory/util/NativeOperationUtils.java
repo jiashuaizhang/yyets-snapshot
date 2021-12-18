@@ -1,18 +1,21 @@
 package com.zhangjiashuai.yyetshistory.util;
 
+import cn.hutool.core.lang.Pair;
 import cn.hutool.core.net.NetUtil;
 import cn.hutool.core.swing.DesktopUtil;
 import cn.hutool.core.swing.clipboard.ClipboardUtil;
-import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.net.URL;
 
-import static com.zhangjiashuai.yyetshistory.config.YyetsHistoryProperties.APPLICATION_INFO;
+import static cn.hutool.core.text.CharSequenceUtil.EMPTY;
+import static com.zhangjiashuai.yyetshistory.config.YyetsHistoryProperties.*;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 
@@ -43,25 +46,25 @@ public class NativeOperationUtils {
     /**
      * 准备启动时触发事件
      * @param args 命令行参数
-     * @return true 执行启动
      */
-    public static boolean onStartPrepare(String[] args) {
+    public static void onStartPrepare(String[] args) {
         NativeYamlUtil.loadCommandLineArgs(args);
-        String host = getHost();
-        int port = getPort();
+        String host = NativeYamlUtil.getHost();
+        int port = NativeYamlUtil.getPort();
         String uri = buildUri(host, port);
         log.info("检查项目是否已经启动");
-        if(telnet(host, port)) {
-            log.info("探测到项目访问路径上有服务运行");
-            if (startAlready()) {
-                log.info("服务已在另一进程运行");
-                onStartFinish();
-            } else {
-                openErrorDialog ("端口冲突","当前地址: " + uri + " 已被占用");
-            }
-            System.exit(0);
+        if(!telnet(host, port)) {
+            return;
         }
-        return true;
+        log.info("探测到项目访问路径上有服务运行");
+        Pair<String, Long> processInfo = getRunningProcessInfo();
+        if (APPLICATION_INFO.equals(processInfo.getKey())) {
+            log.info("服务已在另一进程运行,pid: {}", processInfo.getValue());
+            onStartFinish();
+        } else {
+            openErrorDialog ("端口冲突","当前地址: " + uri + " 已被占用");
+        }
+        System.exit(0);
     }
 
     /**
@@ -87,13 +90,18 @@ public class NativeOperationUtils {
         }
     }
 
-    private static boolean startAlready() {
+    private static Pair<String, Long> getRunningProcessInfo() {
         String url = uri + "info";
         try {
             HttpResponse response = HttpUtil.createGet(url).timeout(100).execute();
-            return response.getStatus() == HttpStatus.HTTP_OK && APPLICATION_INFO.equals(response.body());
-        } catch (HttpException e) {
-            return false;
+            if (response.getStatus() != HttpStatus.HTTP_OK) {
+                return Pair.of(EMPTY, UNKNOWN_PID);
+            }
+            String body = response.body();
+            JSONObject jsonBody = JSON.parseObject(body);
+            return Pair.of(jsonBody.getString(INFO_KEY), jsonBody.getLong(PID_KEY));
+        } catch (Exception e) {
+            return Pair.of(EMPTY, UNKNOWN_PID);
         }
     }
     /**
@@ -148,24 +156,4 @@ public class NativeOperationUtils {
         return NetUtil.isOpen(NetUtil.buildInetSocketAddress(host, port), 100);
     }
 
-
-    private static String getHost() {
-        return NativeYamlUtil.getPropertyOrDefault("yyets-history.host", "localhost").toString();
-    }
-
-    private static int getPort() {
-        Object value = NativeYamlUtil.getProperty("server.port");
-        final int defaultPort = 8080;
-        if(value == null) {
-            return defaultPort;
-        }
-        if(value instanceof Number) {
-            return ((Number) value).intValue();
-        }
-        try {
-            return Integer.parseInt(value.toString());
-        } catch (NumberFormatException e) {
-            return defaultPort;
-        }
-    }
 }

@@ -11,6 +11,10 @@ public class YyetsHistoryProperties {
     public static final int MAX_PAGE_SIZE = 100;
     public static final String APPLICATION_INFO = "yyets-history";
 
+    public static final String INFO_KEY = "info";
+    public static final String PID_KEY = "pid";
+    public static final long UNKNOWN_PID = -1L;
+
     /**
      * 保留的链接类型
      */

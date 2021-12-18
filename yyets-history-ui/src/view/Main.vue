@@ -50,10 +50,10 @@
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="750px" top="8vh">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="1000px" top="8vh">
       <el-form :inline="true" class="demo-form-inline">
         <el-form-item label="资源分组:" class="form-item">
-          <el-select placeholder="资源分组" v-model="linkGroup" :change="linkGroupChange(linkGroup)">
+          <el-select placeholder="资源分组" v-model="linkGroup" @change="linkGroupChange(linkGroup)">
             <el-option
               v-for="(item,i) in resourceLinks"
               :key="`${resourceLinks.name}${item.name}${i}`"
@@ -63,7 +63,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="操作类型:" class="form-item">
-          <el-select placeholder="操作类型" v-model="operationType">
+          <el-select placeholder="操作类型" v-model="operationType" @change="operationTypeChange()">
             <el-option
               label="复制"
               :value="0"
@@ -74,10 +74,29 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="下载渠道:" class="form-item" v-show="operationType === 0">
+          <el-select v-model="downloadWay" placeholder="" style="width: 100px">
+              <el-option
+                v-for="(item,i) in downloadWays"
+                :key="`${resourceLinks.name}${item}${i}`"
+                :label="item"
+                :value="item"
+              />
+            </el-select>
+        </el-form-item>
+        <el-form-item class="form-item" style="position: absolute;right: 50px">
+          <el-button type="success" icon="el-icon-document-copy" circle class="form-item"
+                     title="批量复制" @click="batchCopy()" :disabled="operationType === 1"/>
+        </el-form-item>
       </el-form>
-      <el-table :data="resourceLinksTableData" height="330px">
-        <el-table-column property="episode" label="分集" width="150"></el-table-column>
-        <el-table-column property="name" label="文件名" width="200"></el-table-column>
+      <el-table :data="resourceLinksTableData" height="330px"
+                ref="multipleTable" @selection-change="handleSelectionChange">
+        <el-table-column
+          type="selection"
+          width="55">
+        </el-table-column>
+        <el-table-column property="episode" label="分集" width="55"></el-table-column>
+        <el-table-column property="name" label="文件名" width="575"></el-table-column>
         <el-table-column property="size" label="大小"></el-table-column>
         <el-table-column
           fixed="right"
@@ -104,7 +123,7 @@
       :total="total"
       v-show="tableData.length > 0">
     </el-pagination>
-     <textarea id="hiddenLink" style="display: none"></textarea>
+     <textarea id="hiddenLink" class="hidden-link"/>
   </div>
 </template>
 
@@ -127,14 +146,51 @@
         tableData: [],
         dialogTitle: '资源列表',
         linkGroup: 0,
-        operationType: 0
+        operationType: 0,
+        multipleSelection: [],
+        downloadWays: [],
+        downloadWay: ''
       }
     },
     methods: {
+      batchCopy() {
+        if(this.multipleSelection.length === 0) {
+          this.$message({
+            message: '请选择数据',
+            type: 'warning'
+          });
+          return;
+        }
+        let text = '';
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          let links = this.multipleSelection[i].links;
+          if(!links || links.length === 0) {
+            continue;
+          }
+          let link = links.filter(link => link.way === this.downloadWay).map(link => link.address).pop();
+          let trim;
+          if(link && (trim = link.trim()).length > 0) {
+            text += link;
+            if(i !== this.multipleSelection.length - 1) {
+              text += '\n';
+            }
+          }
+        }
+        if(text) {
+          this.copyLink(text);
+        }
+      },
+      handleSelectionChange(rows) {
+        this.multipleSelection = rows;
+      },
       handleSizeChange(pageSize) {
         this.searchForm.pageSize = pageSize;
         this.searchForm.pageNo = 1;
         this.search();
+      },
+      operationTypeChange(){
+        if(this.$refs.multipleTable)
+          this.$refs.multipleTable.clearSelection();
       },
       handleCurrentChange(pageNo) {
         this.searchForm.pageNo = pageNo;
@@ -149,7 +205,22 @@
           || link.name === 'MP4');
         this.linkGroup = defaultIndex > -1 ? defaultIndex : 0;
         this.resourceLinksTableData = this.resourceLinks[this.linkGroup].items;
+        this.resetDownloadWays();
         this.dialogVisible = true;
+      },
+      resetDownloadWays() {
+        if(!this.resourceLinksTableData || this.resourceLinksTableData.length === 0) {
+            return;
+        }
+        this.downloadWays = [];
+        this.downloadWay = '';
+        let data = this.resourceLinksTableData[0];
+        let links = data.links;
+        if(links && links.length > 0) {
+          let ways = links.map(link => link.way);
+          this.downloadWays = ways;
+          this.downloadWay = ways[0];
+        }
       },
       linkGroupChange(linkGroup) {
         if (!this.resourceRow.seasons || this.resourceRow.seasons.length === 0) {
@@ -162,12 +233,12 @@
         let hiddenLink = document.getElementById(textareaId);
         if (!hiddenLink) {
           hiddenLink = document.createElement('textarea');
-          hiddenLink.style.display = 'none';
+          hiddenLink.class = 'hidden-link';
           hiddenLink.id = textareaId;
         }
         hiddenLink.value = link;
         hiddenLink.select();
-        document.execCommand("copy");
+        document.execCommand('copy');
         this.$message({
           message: '复制成功',
           type: 'success'
@@ -231,5 +302,9 @@
   .pagination {
     text-align: left;
     margin-left: 5px;
+  }
+  .hidden-link {
+    position: fixed;
+    bottom: -100px;
   }
 </style>

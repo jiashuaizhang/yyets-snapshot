@@ -16,6 +16,8 @@ import static cn.hutool.core.text.StrPool.*;
 class NativeYamlUtil {
 
     private static final Map<String, Object> PROPERTIES = new HashMap<>();
+    private static final int DEFAULT_PORT = 8080;
+
 
     static Object getProperty(String key) {
         if(SpringUtil.getApplicationContext() != null) {
@@ -76,6 +78,25 @@ class NativeYamlUtil {
         }
     }
 
+    static String getHost() {
+        return getPropertyOrDefault("yyets-history.host", "localhost").toString();
+    }
+
+    static int getPort() {
+        Object value = getProperty("server.port");
+        if(value == null) {
+            return DEFAULT_PORT;
+        }
+        if(value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        try {
+            return Integer.parseInt(value.toString());
+        } catch (NumberFormatException e) {
+            return DEFAULT_PORT;
+        }
+    }
+
     /**
      * 尝试获取系统变量与jvm参数
      */
@@ -120,7 +141,7 @@ class NativeYamlUtil {
                 readYaml(properties, keyPart, childValue);
             }
         } else {
-            properties.put(key, value);
+            properties.put(key, value instanceof String ? ((String) value).trim() : value);
         }
     }
 }

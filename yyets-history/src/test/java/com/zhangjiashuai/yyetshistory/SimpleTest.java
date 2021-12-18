@@ -11,14 +11,12 @@ import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
 import java.io.File;
-import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 
 public class SimpleTest {
@@ -102,4 +100,5 @@ public class SimpleTest {
         NativeOperationUtils.openErrorDialog ("端口冲突","当前地址: " + uri + " 已被占用");
         System.exit(0);
     }
+
 }

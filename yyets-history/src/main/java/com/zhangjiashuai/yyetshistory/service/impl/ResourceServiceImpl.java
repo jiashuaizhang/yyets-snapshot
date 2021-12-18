@@ -1,7 +1,6 @@
 package com.zhangjiashuai.yyetshistory.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
@@ -20,8 +19,10 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static com.zhangjiashuai.yyetshistory.config.YyetsHistoryProperties.MAX_PAGE_SIZE;
+import static com.zhangjiashuai.yyetshistory.entity.Resource.emptyResource;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.util.Collections.emptyList;
 
 @Service
 public class ResourceServiceImpl implements ResourceService {
@@ -47,26 +48,28 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public Resource parseResource(ResourceDO resourceDO) {
-        Assert.notNull(resourceDO);
+        if(resourceDO == null) {
+            return emptyResource();
+        }
+        Resource resource = new Resource();
+        resource.setName(resourceDO.getName());
+        resource.setSeasons(emptyList());
         String data = resourceDO.getData();
         JSONObject parseObject = JSON.parseObject(data);
         JSONObject dataObject = parseObject.getJSONObject("data");
         if(MapUtil.isEmpty(dataObject)) {
-            throw new NullPointerException("data is null");
+            return resource;
         }
         JSONObject infoJson = dataObject.getJSONObject("info");
         if(MapUtil.isEmpty(infoJson)) {
-            throw new NullPointerException("info is null");
+            return resource;
         }
-        Resource resource = new Resource();
-        resource.setName(resourceDO.getName());
         resource.setNameEN(infoJson.getString("enname"));
         resource.setChannel(infoJson.getString("channel_cn"));
         resource.setArea(infoJson.getString("area"));
         resource.setId(infoJson.getLongValue("id"));
         JSONArray list = dataObject.getJSONArray("list");
         if(CollectionUtil.isEmpty(list)) {
-            resource.setSeasons(Collections.emptyList());
             return resource;
         }
         List<Resource.Season> seasons = new ArrayList<>(list.size());
