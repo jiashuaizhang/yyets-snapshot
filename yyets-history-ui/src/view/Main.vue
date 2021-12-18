@@ -91,10 +91,7 @@
       </el-form>
       <el-table :data="resourceLinksTableData" height="330px"
                 ref="multipleTable" @selection-change="handleSelectionChange">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
+        <el-table-column type="selection" width="55" v-if="operationType === 0"></el-table-column>
         <el-table-column property="episode" label="分集" width="55"></el-table-column>
         <el-table-column property="name" label="文件名" width="575"></el-table-column>
         <el-table-column property="size" label="大小"></el-table-column>
@@ -252,7 +249,7 @@
         } else {
           this.$alert(`<textarea style="width:380px;height:60px;">${link}</textarea>`, '查看链接', {
             dangerouslyUseHTMLString: true
-          });
+          }).catch(e => {});
         }
       },
       search(newIn) {
