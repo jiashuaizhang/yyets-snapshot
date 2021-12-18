@@ -170,7 +170,7 @@
           let link = links.filter(link => link.way === this.downloadWay).map(link => link.address).pop();
           let trim;
           if(link && (trim = link.trim()).length > 0) {
-            text += link;
+            text += trim;
             if(i !== this.multipleSelection.length - 1) {
               text += '\n';
             }
@@ -258,6 +258,9 @@
       search(newIn) {
         if(newIn) {
           this.searchForm.pageNo = 1;
+        }
+        if(this.searchForm.name) {
+          this.searchForm.name = this.searchForm.name.trim();
         }
         let queryParams = '';
         let i = 0;
