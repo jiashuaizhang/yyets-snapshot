@@ -21,7 +21,7 @@ pagehelper:
 server:
   port: 9000
 yyets-history:
-  link-way-filter: #保留的链接类型
+  link-way-filter: # 保留的链接类型
     - 电驴
     - 磁力
   host: localhost # 域名

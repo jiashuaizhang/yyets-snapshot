@@ -47,7 +47,6 @@ public class NativeOperationUtils {
      */
     public static void onStartPrepare(String[] args) {
         String classLoader = NativeOperationUtils.class.getClassLoader().getClass().getSimpleName();
-        log.debug("onStartPrepare, classloader {}", classLoader);
         if(classLoader.endsWith("RestartClassLoader")) {
             return;
         }
@@ -58,15 +57,15 @@ public class NativeOperationUtils {
         NativeConfigUtil.loadCommandLineArgs(args);
         String host = NativeConfigUtil.getHost();
         int port = NativeConfigUtil.getPort();
-        buildUri(host, port);
         if(!telnet(host, port)) {
             return;
         }
         log.info("探测到项目访问路径上有服务运行");
+        buildUri(host, port);
         Pair<String, Long> processInfo = getRunningProcessInfo();
         if (APPLICATION_INFO.equals(processInfo.getKey())) {
             log.info("服务已在另一进程运行,pid: {}", processInfo.getValue());
-            onStartFinish(args);
+            onStartFinish();
         } else {
             openErrorDialog ("端口冲突","当前地址: " + uri + " 已被占用");
         }
@@ -75,10 +74,9 @@ public class NativeOperationUtils {
 
     /**
      * 启动成功触发事件
-     * @param uri 项目访问地址
      */
-    public static void onStartFinish(String[] args) {
-        if(!NativeConfigUtil.isStartFinishEvent(args)) {
+    public static void onStartFinish() {
+        if(!NativeConfigUtil.isStartFinishEvent()) {
             return;
         }
         if(uri == null) {

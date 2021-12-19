@@ -142,13 +142,13 @@ class NativeConfigUtil {
         return eventCheck(key, args);
     }
 
-    static boolean isStartFinishEvent(String[] args) {
+    static boolean isStartFinishEvent() {
         String key = "yyets-history.start-finish-event";
         Object configValue = getProperty(key);
         if(configValue != null) {
             return Boolean.parseBoolean(configValue.toString());
         }
-        return eventCheck(key, args);
+        return true;
     }
 
     private static boolean eventCheck(String key, String[] args) {
@@ -157,7 +157,7 @@ class NativeConfigUtil {
             for (String arg : args) {
                 if(StrUtil.startWith(arg, COMMAND_LINE_ARG_PREFIX + key)) {
                     Pair<String, String> pair = getCommandLineArg(arg);
-                    strValue = pair.getValue();
+                    strValue = Optional.ofNullable(pair).map(Pair::getValue).orElse(null);
                     break;
                 }
             }
