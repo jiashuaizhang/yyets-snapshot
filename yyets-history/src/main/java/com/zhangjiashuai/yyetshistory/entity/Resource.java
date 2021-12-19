@@ -1,7 +1,7 @@
 package com.zhangjiashuai.yyetshistory.entity;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 
 import java.util.Collections;
@@ -48,7 +48,7 @@ public class Resource {
 
         @Override
         public int compareTo(Group that) {
-            return StrUtil.compareIgnoreCase(this.name, that.name,false);
+            return CharSequenceUtil.compareIgnoreCase(this.name, that.name, false);
         }
     }
 
@@ -72,7 +72,7 @@ public class Resource {
 
         @Override
         public int compareTo(Link that) {
-            return StrUtil.compareIgnoreCase(this.way, that.way,false);
+            return CharSequenceUtil.compareIgnoreCase(this.way, that.way, false);
         }
     }
 

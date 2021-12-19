@@ -110,7 +110,7 @@ public class ResourceServiceImpl implements ResourceService {
                     for (int k = 0; k < filesArray.size(); k++) {
                         JSONObject fileJson = filesArray.getJSONObject(k);
                         String way = fileJson.getString("way_cn");
-                        LinkedHashSet<String> linkWayFilter = config.getLinkWayFilter();
+                        Set<String> linkWayFilter = config.getLinkWayFilter();
                         if(!linkWayFilter.contains(way)) {
                             continue;
                         }
@@ -139,11 +139,6 @@ public class ResourceServiceImpl implements ResourceService {
         pageSize = min(max(1, pageSize), MAX_PAGE_SIZE);
         Page<ResourceDO> page = PageHelper.<ResourceDO>startPage(pageNo, pageSize).doSelectPage(() -> findByNameLike(name));
         return page.toPageInfo(this::parseResource);
-    }
-
-    @Override
-    public PageInfo<Resource> selectPage(String name, int pageNo) {
-        return selectPage(name, pageNo, config.getDefaultPageSize());
     }
 
 }

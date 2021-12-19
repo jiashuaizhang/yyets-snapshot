@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @SpringBootTest
@@ -54,5 +56,36 @@ class YyetsHistoryApplicationTests {
         log.info(page2.toString());
         log.info("==========第2页===============");
         Assert.isFalse(page1.equals(page2));
+    }
+
+    @Test
+    public void allWaysTest() {
+        PageInfo<Resource> page1 = resourceService.selectPage(null, 1, 100);
+        Set<String> allWays = new HashSet<>();
+        for (Resource resource : page1.getList()) {
+            List<Resource.Season> seasons = resource.getSeasons();
+            if(seasons == null)
+                continue;
+            for (Resource.Season season : seasons) {
+                List<Resource.Group> groups = season.getGroups();
+                if(groups == null)
+                    continue;
+                for (Resource.Group group : groups) {
+                    List<Resource.Item> items = group.getItems();
+                    if(items == null)
+                        continue;
+                    for (Resource.Item item : items) {
+                        List<Resource.Link> links = item.getLinks();
+                        if(links == null)
+                            continue;
+                        for (Resource.Link link : links) {
+                            allWays.add(link.getWay());
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println(allWays);
+        Assert.isTrue(allWays.size() > 2);
     }
 }

@@ -27,20 +27,18 @@ public class NativeOperationUtils {
 
     static {
         System.setProperty("java.awt.headless", "false");
-        NativeYamlUtil.loadYamlConfig();
     }
 
     /**
-     * 项目范文路径
+     * 项目访问路径
      */
     private static volatile String uri;
 
     private NativeOperationUtils() {}
 
-    private static String buildUri(String host, int port) {
+    private static void buildUri(String host, int port) {
         uri = String.format("http://%s:%d/", host, port);
         log.info("项目访问路径初始化完成: {}", uri);
-        return uri;
     }
 
     /**
@@ -48,11 +46,19 @@ public class NativeOperationUtils {
      * @param args 命令行参数
      */
     public static void onStartPrepare(String[] args) {
-        NativeYamlUtil.loadCommandLineArgs(args);
-        String host = NativeYamlUtil.getHost();
-        int port = NativeYamlUtil.getPort();
-        String uri = buildUri(host, port);
-        log.info("检查项目是否已经启动");
+        String classLoader = NativeOperationUtils.class.getClassLoader().getClass().getSimpleName();
+        log.debug("onStartPrepare, classloader {}", classLoader);
+        if(classLoader.endsWith("RestartClassLoader")) {
+            return;
+        }
+        if(!NativeConfigUtil.isStartPrepareEvent(args)) {
+            return;
+        }
+        NativeConfigUtil.loadYamlConfig();
+        NativeConfigUtil.loadCommandLineArgs(args);
+        String host = NativeConfigUtil.getHost();
+        int port = NativeConfigUtil.getPort();
+        buildUri(host, port);
         if(!telnet(host, port)) {
             return;
         }
@@ -60,7 +66,7 @@ public class NativeOperationUtils {
         Pair<String, Long> processInfo = getRunningProcessInfo();
         if (APPLICATION_INFO.equals(processInfo.getKey())) {
             log.info("服务已在另一进程运行,pid: {}", processInfo.getValue());
-            onStartFinish();
+            onStartFinish(args);
         } else {
             openErrorDialog ("端口冲突","当前地址: " + uri + " 已被占用");
         }
@@ -71,7 +77,13 @@ public class NativeOperationUtils {
      * 启动成功触发事件
      * @param uri 项目访问地址
      */
-    public static void onStartFinish() {
+    public static void onStartFinish(String[] args) {
+        if(!NativeConfigUtil.isStartFinishEvent(args)) {
+            return;
+        }
+        if(uri == null) {
+            buildUri(NativeConfigUtil.getHost(), NativeConfigUtil.getPort());
+        }
         log.info("程序启动完成，访问地址: {}", uri);
         try {
             webBrowse(uri);

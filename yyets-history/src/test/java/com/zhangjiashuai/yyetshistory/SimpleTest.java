@@ -1,7 +1,6 @@
 package com.zhangjiashuai.yyetshistory;
 
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.net.NetUtil;
 import cn.hutool.core.net.URLDecoder;
 import cn.hutool.core.swing.DesktopUtil;
 import cn.hutool.core.swing.clipboard.ClipboardUtil;
@@ -13,10 +12,14 @@ import javax.swing.*;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
+import static cn.hutool.core.text.StrPool.DASHED;
+import static cn.hutool.core.text.StrPool.UNDERLINE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 
 public class SimpleTest {
@@ -87,18 +90,21 @@ public class SimpleTest {
     }
 
     @Test
-    public void testTelnet() {
-        boolean open = NetUtil.isOpen(NetUtil.buildInetSocketAddress("localhost", 9000), 1000);
-        Assert.isTrue(open);
-        open = NetUtil.isOpen(NetUtil.buildInetSocketAddress("localhost", 9001), 10);
-        Assert.isFalse(open);
-    }
-
-    @Test
     public void testMsgError() {
         String uri = "http://localhost:9000/";
         NativeOperationUtils.openErrorDialog ("端口冲突","当前地址: " + uri + " 已被占用");
         System.exit(0);
+    }
+
+    @Test
+    public void testSystemEnv() {
+        String key = "yyets-history.start-prepare-event";
+        String envKey = Arrays.stream(key.split("\\.")).map(str -> str.replaceAll(DASHED, UNDERLINE).toUpperCase())
+                .collect(Collectors.joining(UNDERLINE));
+        System.out.println(envKey);
+        String value = System.getenv(envKey);
+        System.out.println(value);
+        Assert.notNull(value);
     }
 
 }
