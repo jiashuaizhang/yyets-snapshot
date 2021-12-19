@@ -6,6 +6,8 @@ import com.zhangjiashuai.yyetshistory.entity.ResourceDO;
 
 import java.util.List;
 
+import static com.zhangjiashuai.yyetshistory.config.YyetsHistoryProperties.DEFAULT_PAGE_SIZE;
+
 public interface ResourceService {
 
     List<ResourceDO> findByNameLike(String name);
@@ -16,6 +18,8 @@ public interface ResourceService {
 
     PageInfo<Resource> selectPage(String name, int pageNo, int pageSize);
 
-    PageInfo<Resource> selectPage(String name, int pageNo);
+    default PageInfo<Resource> selectPage(String name, int pageNo) {
+        return selectPage(name, pageNo, DEFAULT_PAGE_SIZE);
+    }
 
 }

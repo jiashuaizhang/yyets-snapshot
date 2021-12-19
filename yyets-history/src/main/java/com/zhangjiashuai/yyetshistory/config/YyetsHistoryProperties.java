@@ -1,8 +1,10 @@
 package com.zhangjiashuai.yyetshistory.config;
 
+import cn.hutool.core.collection.CollectionUtil;
 import lombok.Data;
 
-import java.util.LinkedHashSet;
+import java.util.Collections;
+import java.util.Set;
 
 @Data
 public class YyetsHistoryProperties {
@@ -15,20 +17,28 @@ public class YyetsHistoryProperties {
     public static final String PID_KEY = "pid";
     public static final long UNKNOWN_PID = -1L;
 
+    public static final String DEFAULT_HOST = "localhost";
+    public static final Set<String> DEFAULT_LINK_WAY_FILTER =
+            Collections.unmodifiableSet(CollectionUtil.newHashSet("电驴", "磁力"));
+
     /**
      * 保留的链接类型
      */
-    private LinkedHashSet<String> linkWayFilter;
-    /**
-     * 默认每页大小
-     */
-    private int defaultPageSize;
+    private Set<String> linkWayFilter = DEFAULT_LINK_WAY_FILTER;
+
     /**
      * 域名
      */
-    private String host;
+    private String host = DEFAULT_HOST;
 
-    public int getDefaultPageSize() {
-        return defaultPageSize < 1 ? DEFAULT_PAGE_SIZE : defaultPageSize;
-    }
+    /**
+     * 是否触发启动前置事件
+     */
+    private boolean startPrepareEvent = true;
+
+    /**
+     * 是否触发启动成功事件
+     */
+    private boolean startFinishEvent = true;
+
 }
