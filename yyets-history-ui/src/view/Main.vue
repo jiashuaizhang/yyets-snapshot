@@ -1,7 +1,7 @@
 <template>
   <div style="border: 1px solid #eee">
     <div class="grid-content bg-purple-light div-content">
-      <el-form :inline="true" :model="searchForm" class="demo-form-inline" @submit.native.prevent>
+      <el-form :inline="true" :model="searchForm" @submit.native.prevent>
         <el-form-item label="剧目:" class="form-item">
           <el-input v-model="searchForm.name" placeholder="剧目" @keyup.enter.native="search(true)"></el-input>
         </el-form-item>
@@ -51,7 +51,7 @@
       </el-table>
     </div>
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="1000px" top="8vh">
-      <el-form :inline="true" class="demo-form-inline">
+      <el-form :inline="true">
         <el-form-item label="资源分组:" class="form-item">
           <el-select placeholder="资源分组" v-model="linkGroup" @change="linkGroupChange(linkGroup)">
             <el-option
@@ -120,7 +120,7 @@
       :total="total"
       v-show="tableData.length > 0">
     </el-pagination>
-     <textarea id="hiddenLink" class="hidden-link"/>
+     <textarea id="hiddenLink" class="hidden-link"></textarea>
   </div>
 </template>
 
@@ -233,7 +233,7 @@
           hiddenLink.class = 'hidden-link';
           hiddenLink.id = textareaId;
         }
-        hiddenLink.value = link;
+        hiddenLink.innerHTML = link;
         hiddenLink.select();
         document.execCommand('copy');
         this.$message({
