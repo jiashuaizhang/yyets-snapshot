@@ -119,7 +119,7 @@ class NativeConfigUtil {
 
     static String getHost() {
         String host = StrUtil.toStringOrNull(getProperty("yyets-history.host"));
-        return StrUtil.isNotBlank(host) ? StrUtil.trim(host) : DEFAULT_HOST;
+        return StrUtil.isNotBlank(host) ? host.trim() : DEFAULT_HOST;
     }
 
     static int getPort() {

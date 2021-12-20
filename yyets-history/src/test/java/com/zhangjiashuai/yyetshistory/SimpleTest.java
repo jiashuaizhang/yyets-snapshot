@@ -4,7 +4,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.net.URLDecoder;
 import cn.hutool.core.swing.DesktopUtil;
 import cn.hutool.core.swing.clipboard.ClipboardUtil;
-import cn.hutool.extra.compress.extractor.SevenZExtractor;
+import cn.hutool.core.util.ZipUtil;
 import com.zhangjiashuai.yyetshistory.util.NativeOperationUtils;
 import org.junit.jupiter.api.Test;
 
@@ -48,16 +48,18 @@ public class SimpleTest {
     }
 
     @Test
-    public void testExtract7z() {
+    public void testExtractZip() {
         String projectPath = System.getProperty("user.dir");
         String staticResourcePath = projectPath + "/src/main/resources/static/";
-        String db7zFilename = "yyets.7z";
-        File db7zFile = new File(staticResourcePath + db7zFilename);
-        System.out.println(db7zFile.exists());
-        try (SevenZExtractor sevenZExtractor = new SevenZExtractor(db7zFile)) {
-            sevenZExtractor.extract(new File(staticResourcePath));
-        }
+        String dbZipFilename = "yyets.zip";
+        File dbZipFile = new File(staticResourcePath + dbZipFilename);
+        Assert.isTrue(dbZipFile.exists());
         File dbFile = new File(staticResourcePath + "yyets.db");
+        if(!dbFile.exists()) {
+            long start = System.currentTimeMillis();
+            ZipUtil.unzip(dbZipFile, new File(staticResourcePath));
+            System.out.println("解压完成，耗时: " + (System.currentTimeMillis() - start));
+        }
         Assert.isTrue(dbFile.exists());
     }
 
