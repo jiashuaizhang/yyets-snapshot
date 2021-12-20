@@ -103,7 +103,7 @@ public class NativeOperationUtils {
     private static Pair<String, Long> getRunningProcessInfo() {
         String url = uri + "info";
         try {
-            HttpResponse response = HttpUtil.createGet(url).timeout(100).execute();
+            HttpResponse response = HttpUtil.createGet(url).timeout(500).execute();
             if (response.getStatus() != HttpStatus.HTTP_OK) {
                 return Pair.of(EMPTY, UNKNOWN_PID);
             }
