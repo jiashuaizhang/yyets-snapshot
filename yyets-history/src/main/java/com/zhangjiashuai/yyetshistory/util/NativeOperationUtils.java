@@ -34,7 +34,8 @@ public class NativeOperationUtils {
      */
     private static volatile String uri;
 
-    private NativeOperationUtils() {}
+    private NativeOperationUtils() {
+    }
 
     private static void buildUri(String host, int port) {
         uri = String.format("http://%s:%d/", host, port);
@@ -43,21 +44,22 @@ public class NativeOperationUtils {
 
     /**
      * 准备启动时触发事件
+     *
      * @param args 命令行参数
      */
     public static void onStartPrepare(String[] args) {
         String classLoader = NativeOperationUtils.class.getClassLoader().getClass().getSimpleName();
-        if(classLoader.endsWith("RestartClassLoader")) {
+        if (classLoader.endsWith("RestartClassLoader")) {
             return;
         }
-        if(!NativeConfigUtil.isStartPrepareEvent(args)) {
+        if (!NativeConfigUtil.isStartPrepareEvent(args)) {
             return;
         }
         NativeConfigUtil.loadYamlConfig();
         NativeConfigUtil.loadCommandLineArgs(args);
         String host = NativeConfigUtil.getHost();
         int port = NativeConfigUtil.getPort();
-        if(!telnet(host, port)) {
+        if (!telnet(host, port)) {
             return;
         }
         log.info("探测到项目访问路径上有服务运行");
@@ -67,7 +69,7 @@ public class NativeOperationUtils {
             log.info("服务已在另一进程运行,pid: {}", processInfo.getValue());
             onStartFinish();
         } else {
-            openErrorDialog ("端口冲突","当前地址: " + uri + " 已被占用");
+            openErrorDialog("端口冲突", "当前地址: " + uri + " 已被占用");
         }
         System.exit(0);
     }
@@ -76,10 +78,10 @@ public class NativeOperationUtils {
      * 启动成功触发事件
      */
     public static void onStartFinish() {
-        if(!NativeConfigUtil.isStartFinishEvent()) {
+        if (!NativeConfigUtil.isStartFinishEvent()) {
             return;
         }
-        if(uri == null) {
+        if (uri == null) {
             buildUri(NativeConfigUtil.getHost(), NativeConfigUtil.getPort());
         }
         log.info("程序启动完成，访问地址: {}", uri);
@@ -114,8 +116,10 @@ public class NativeOperationUtils {
             return Pair.of(EMPTY, UNKNOWN_PID);
         }
     }
+
     /**
      * 浏览器访问
+     *
      * @param url
      */
     public static void webBrowse(String url) {
@@ -124,6 +128,7 @@ public class NativeOperationUtils {
 
     /**
      * 复制到剪贴板
+     *
      * @param str
      */
     public static void copy2Clipboard(String str) {
@@ -134,12 +139,14 @@ public class NativeOperationUtils {
         URL icon = NativeOperationUtils.class.getResource("/static/icon_msg.png");
         return openInputDialog("启动完成", "打开浏览器访问以下地址:", url, new ImageIcon(icon));
     }
+
     /**
      * 弹出对话框
+     *
      * @param title 标题
      * @param label 文本框名称
-     * @param text 文本内容
-     * @param icon 图标
+     * @param text  文本内容
+     * @param icon  图标
      * @return
      */
     public static String openInputDialog(String title, String label, String text, Icon icon) {
@@ -149,8 +156,9 @@ public class NativeOperationUtils {
 
     /**
      * 弹出错误提示框
+     *
      * @param title 标题
-     * @param text 内容
+     * @param text  内容
      */
     public static void openErrorDialog(String title, String text) {
         JOptionPane.showMessageDialog(null, text, title, ERROR_MESSAGE);
@@ -158,6 +166,7 @@ public class NativeOperationUtils {
 
     /**
      * 检查端口是否开启
+     *
      * @param host
      * @param port
      * @return

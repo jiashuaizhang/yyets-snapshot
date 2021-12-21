@@ -24,11 +24,12 @@ class NativeConfigUtil {
 
     /**
      * 获取配置属性
+     *
      * @param key
      * @return
      */
     static Object getProperty(String key) {
-        if(SpringUtil.getApplicationContext() != null) {
+        if (SpringUtil.getApplicationContext() != null) {
             return SpringUtil.getProperty(key);
         }
         return PROPERTIES.get(key);
@@ -36,6 +37,7 @@ class NativeConfigUtil {
 
     /**
      * 获取环境变量
+     *
      * @param key
      * @return
      */
@@ -43,7 +45,7 @@ class NativeConfigUtil {
         String envKey = Arrays.stream(key.split("\\.")).map(str -> str.replaceAll(DASHED, UNDERLINE).toUpperCase())
                 .collect(Collectors.joining(UNDERLINE));
         String value = null;
-        if((value = System.getenv(envKey)) == null) {
+        if ((value = System.getenv(envKey)) == null) {
             value = System.getenv(key);
         }
         return StrUtil.trim(value);
@@ -51,6 +53,7 @@ class NativeConfigUtil {
 
     /**
      * 获取jvm参数
+     *
      * @param key
      * @return
      */
@@ -61,16 +64,17 @@ class NativeConfigUtil {
 
     /**
      * 获取命令行参数
+     *
      * @param str
      * @return
      */
     static Pair<String, String> getCommandLineArg(String str) {
-        if(StrUtil.isBlank(str) || !str.startsWith(COMMAND_LINE_ARG_PREFIX)) {
+        if (StrUtil.isBlank(str) || !str.startsWith(COMMAND_LINE_ARG_PREFIX)) {
             return null;
         }
         String subs = str.substring(COMMAND_LINE_ARG_PREFIX.length());
         String[] array = subs.split(COMMAND_LINE_ARG_SEPARATOR);
-        if(array.length != 2 || StrUtil.isBlank(array[0])) {
+        if (array.length != 2 || StrUtil.isBlank(array[0])) {
             return null;
         }
         return Pair.of(array[0].trim(), StrUtil.trim(array[1]));
@@ -81,7 +85,7 @@ class NativeConfigUtil {
         try {
             loadConfigYaml(null);
             Object configValue = PROPERTIES.get("spring.profiles.active");
-            if(configValue == null) {
+            if (configValue == null) {
                 return;
             }
             Collection<String> activeProfiles;
@@ -91,7 +95,7 @@ class NativeConfigUtil {
                 activeProfiles = Arrays.stream(configValue.toString().split(COMMA)).collect(Collectors.toList());
             }
             for (String profile : activeProfiles) {
-                if(StrUtil.isBlank(profile)) {
+                if (StrUtil.isBlank(profile)) {
                     continue;
                 }
                 try {
@@ -106,12 +110,12 @@ class NativeConfigUtil {
     }
 
     static void loadCommandLineArgs(String[] args) {
-        if(ArrayUtil.isEmpty(args)) {
+        if (ArrayUtil.isEmpty(args)) {
             return;
         }
         for (String arg : args) {
             Pair<String, String> pair = getCommandLineArg(arg);
-            if(pair != null) {
+            if (pair != null) {
                 PROPERTIES.put(pair.getKey(), pair.getValue());
             }
         }
@@ -124,10 +128,10 @@ class NativeConfigUtil {
 
     static int getPort() {
         Object value = getProperty("server.port");
-        if(value == null) {
+        if (value == null) {
             return DEFAULT_PORT;
         }
-        if(value instanceof Number) {
+        if (value instanceof Number) {
             return ((Number) value).intValue();
         }
         try {
@@ -145,7 +149,7 @@ class NativeConfigUtil {
     static boolean isStartFinishEvent() {
         String key = "yyets-history.start-finish-event";
         Object configValue = getProperty(key);
-        if(configValue != null) {
+        if (configValue != null) {
             return Boolean.parseBoolean(configValue.toString());
         }
         return true;
@@ -153,19 +157,19 @@ class NativeConfigUtil {
 
     private static boolean eventCheck(String key, String[] args) {
         String strValue = null;
-        if(ArrayUtil.isNotEmpty(args)) {
+        if (ArrayUtil.isNotEmpty(args)) {
             for (String arg : args) {
-                if(StrUtil.startWith(arg, COMMAND_LINE_ARG_PREFIX + key)) {
+                if (StrUtil.startWith(arg, COMMAND_LINE_ARG_PREFIX + key)) {
                     Pair<String, String> pair = getCommandLineArg(arg);
                     strValue = Optional.ofNullable(pair).map(Pair::getValue).orElse(null);
                     break;
                 }
             }
         }
-        if(strValue == null) {
+        if (strValue == null) {
             strValue = getJvmPropertity(key);
         }
-        if(strValue == null) {
+        if (strValue == null) {
             strValue = getSystemEnv(key);
         }
         if (strValue == null) {
@@ -182,10 +186,10 @@ class NativeConfigUtil {
         for (Map.Entry<String, Object> entry : PROPERTIES.entrySet()) {
             String key = entry.getKey();
             String newValue;
-            if((newValue = getJvmPropertity(key)) == null) {
+            if ((newValue = getJvmPropertity(key)) == null) {
                 newValue = getSystemEnv(key);
             }
-            if(newValue != null) {
+            if (newValue != null) {
                 entry.setValue(newValue);
             }
         }
@@ -193,7 +197,7 @@ class NativeConfigUtil {
 
     private static void loadConfigYaml(String profile) {
         String filename;
-        if(StrUtil.isBlank(profile)) {
+        if (StrUtil.isBlank(profile)) {
             filename = "application.yml";
         } else {
             filename = String.format("application-%s.yml", profile.trim());
@@ -203,7 +207,7 @@ class NativeConfigUtil {
     }
 
     private static void readYaml(Map<String, Object> properties, String key, Object value) {
-        if(value instanceof LinkedHashMap) {
+        if (value instanceof LinkedHashMap) {
             LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) value;
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String childKey = StrUtil.trim(entry.getKey());

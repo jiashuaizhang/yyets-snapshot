@@ -22,7 +22,7 @@ public class ResourceController {
 
     @GetMapping("/page")
     public PageInfo<Resource> selectPage(@RequestParam(required = false) String name,
-                @RequestParam int pageNo, @RequestParam int pageSize) {
+                                         @RequestParam int pageNo, @RequestParam int pageSize) {
         PageInfo<Resource> resources = resourceService.selectPage(name, pageNo, pageSize);
         log.info("查询成功, name: {}, pageNo: {}, pageSize: {}, total: {}",
                 name, resources.getPageNum(), resources.getPageSize(), resources.getTotal());

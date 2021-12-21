@@ -76,13 +76,13 @@
         </el-form-item>
         <el-form-item label="下载渠道:" class="form-item" v-show="operationType === 0">
           <el-select v-model="downloadWay" placeholder="" style="width: 100px">
-              <el-option
-                v-for="(item,i) in downloadWays"
-                :key="`${resourceLinks.name}${item}${i}`"
-                :label="item"
-                :value="item"
-              />
-            </el-select>
+            <el-option
+              v-for="(item,i) in downloadWays"
+              :key="`${resourceLinks.name}${item}${i}`"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item class="form-item" style="position: absolute;right: 50px">
           <el-button type="success" icon="el-icon-document-copy" circle class="form-item"
@@ -110,15 +110,15 @@
       </el-table>
     </el-dialog>
     <el-pagination class="pagination"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="searchForm.pageNo"
-      :page-sizes="[10, 20, 30, 40, 50]"
-      :page-size="searchForm.pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      background
-      :total="total"
-      v-show="tableData.length > 0">
+                   @size-change="handleSizeChange"
+                   @current-change="handleCurrentChange"
+                   :current-page="searchForm.pageNo"
+                   :page-sizes="[10, 20, 30, 40, 50]"
+                   :page-size="searchForm.pageSize"
+                   layout="total, sizes, prev, pager, next, jumper"
+                   background
+                   :total="total"
+                   v-show="tableData.length > 0">
     </el-pagination>
      <textarea id="hiddenLink" class="hidden-link"></textarea>
   </div>
@@ -151,7 +151,7 @@
     },
     methods: {
       batchCopy() {
-        if(this.multipleSelection.length === 0) {
+        if (this.multipleSelection.length === 0) {
           this.$message({
             message: '请选择数据',
             type: 'warning'
@@ -161,19 +161,19 @@
         let text = '';
         for (let i = 0; i < this.multipleSelection.length; i++) {
           let links = this.multipleSelection[i].links;
-          if(!links || links.length === 0) {
+          if (!links || links.length === 0) {
             continue;
           }
           let link = links.filter(link => link.way === this.downloadWay).map(link => link.address).pop();
           let trim;
-          if(link && (trim = link.trim()).length > 0) {
+          if (link && (trim = link.trim()).length > 0) {
             text += trim;
-            if(i !== this.multipleSelection.length - 1) {
+            if (i !== this.multipleSelection.length - 1) {
               text += '\n';
             }
           }
         }
-        if(text) {
+        if (text) {
           this.copyLink(text);
         }
       },
@@ -185,8 +185,8 @@
         this.searchForm.pageNo = 1;
         this.search();
       },
-      operationTypeChange(){
-        if(this.$refs.multipleTable)
+      operationTypeChange() {
+        if (this.$refs.multipleTable)
           this.$refs.multipleTable.clearSelection();
       },
       handleCurrentChange(pageNo) {
@@ -206,14 +206,14 @@
         this.dialogVisible = true;
       },
       resetDownloadWays() {
-        if(!this.resourceLinksTableData || this.resourceLinksTableData.length === 0) {
-            return;
+        if (!this.resourceLinksTableData || this.resourceLinksTableData.length === 0) {
+          return;
         }
         this.downloadWays = [];
         this.downloadWay = '';
         let data = this.resourceLinksTableData[0];
         let links = data.links;
-        if(links && links.length > 0) {
+        if (links && links.length > 0) {
           let ways = links.map(link => link.way);
           this.downloadWays = ways;
           this.downloadWay = ways[0];
@@ -249,14 +249,15 @@
         } else {
           this.$alert(`<textarea style="width:380px;height:60px;">${link}</textarea>`, '查看链接', {
             dangerouslyUseHTMLString: true
-          }).catch(e => {});
+          }).catch(e => {
+          });
         }
       },
       search(newIn) {
-        if(newIn) {
+        if (newIn) {
           this.searchForm.pageNo = 1;
         }
-        if(this.searchForm.name) {
+        if (this.searchForm.name) {
           this.searchForm.name = this.searchForm.name.trim();
         }
         let queryParams = '';
@@ -275,7 +276,7 @@
           this.total = data.total;
           this.searchForm.pageSize = data.pageSize;
           this.searchForm.pageNo = data.pageNum;
-          if(newIn) {
+          if (newIn) {
             this.$message({
               message: '查询成功',
               type: 'success'
@@ -295,14 +296,17 @@
     margin-top: 20px;
     width: 100%;
   }
+
   .form-item {
     margin-left: 20px;
     float: left;
   }
+
   .pagination {
     text-align: left;
     margin-left: 5px;
   }
+
   .hidden-link {
     position: fixed;
     bottom: -100px;

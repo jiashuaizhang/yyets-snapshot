@@ -61,7 +61,7 @@ public class Resource {
 
         @Override
         public int compareTo(Item that) {
-            return  Integer.compare(this.episode, that.episode);
+            return Integer.compare(this.episode, that.episode);
         }
     }
 

@@ -48,7 +48,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public Resource parseResource(ResourceDO resourceDO) {
-        if(resourceDO == null) {
+        if (resourceDO == null) {
             return emptyResource();
         }
         Resource resource = new Resource();
@@ -57,11 +57,11 @@ public class ResourceServiceImpl implements ResourceService {
         String data = resourceDO.getData();
         JSONObject parseObject = JSON.parseObject(data);
         JSONObject dataObject = parseObject.getJSONObject("data");
-        if(MapUtil.isEmpty(dataObject)) {
+        if (MapUtil.isEmpty(dataObject)) {
             return resource;
         }
         JSONObject infoJson = dataObject.getJSONObject("info");
-        if(MapUtil.isEmpty(infoJson)) {
+        if (MapUtil.isEmpty(infoJson)) {
             return resource;
         }
         resource.setNameEN(infoJson.getString("enname"));
@@ -69,7 +69,7 @@ public class ResourceServiceImpl implements ResourceService {
         resource.setArea(infoJson.getString("area"));
         resource.setId(infoJson.getLongValue("id"));
         JSONArray list = dataObject.getJSONArray("list");
-        if(CollectionUtil.isEmpty(list)) {
+        if (CollectionUtil.isEmpty(list)) {
             return resource;
         }
         List<Resource.Season> seasons = new ArrayList<>(list.size());
@@ -81,7 +81,7 @@ public class ResourceServiceImpl implements ResourceService {
             season.setNumber(seasonJson.getIntValue("season_num"));
             seasons.add(season);
             JSONObject itemsJson = seasonJson.getJSONObject("items");
-            if(CollectionUtil.isEmpty(itemsJson)) {
+            if (CollectionUtil.isEmpty(itemsJson)) {
                 continue;
             }
             List<Resource.Group> groups = new ArrayList<>(itemsJson.size());
@@ -102,7 +102,7 @@ public class ResourceServiceImpl implements ResourceService {
                     item.setName(itemJson.getString("name"));
                     item.setSize(itemJson.getString("size"));
                     JSONArray filesArray = itemJson.getJSONArray("files");
-                    if(CollectionUtil.isEmpty(filesArray)) {
+                    if (CollectionUtil.isEmpty(filesArray)) {
                         continue;
                     }
                     List<Resource.Link> links = new ArrayList<>();
@@ -111,11 +111,11 @@ public class ResourceServiceImpl implements ResourceService {
                         JSONObject fileJson = filesArray.getJSONObject(k);
                         String way = fileJson.getString("way_cn");
                         Set<String> linkWayFilter = config.getLinkWayFilter();
-                        if(!linkWayFilter.contains(way)) {
+                        if (!linkWayFilter.contains(way)) {
                             continue;
                         }
                         String address = fileJson.getString("address");
-                        if(StrUtil.isEmpty(address)) {
+                        if (StrUtil.isEmpty(address)) {
                             continue;
                         }
                         Resource.Link link = new Resource.Link();

@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface ResourceMapper extends BaseMapper<ResourceDO> {
 
-    LambdaQueryWrapper<ResourceDO>  ORDER_BY_NAME_WRAPPER = Wrappers.<ResourceDO>lambdaQuery()
+    LambdaQueryWrapper<ResourceDO> ORDER_BY_NAME_WRAPPER = Wrappers.<ResourceDO>lambdaQuery()
             .orderByAsc(ResourceDO::getName);
 
     static LambdaQueryWrapper<ResourceDO> queryWrapperByNameLike(String name) {
@@ -22,14 +22,14 @@ public interface ResourceMapper extends BaseMapper<ResourceDO> {
     }
 
     default long countByNameLike(String name) {
-        if(StrUtil.isEmpty(name)) {
+        if (StrUtil.isEmpty(name)) {
             return selectCount(ORDER_BY_NAME_WRAPPER);
         }
         return selectCount(queryWrapperByNameLike(name));
     }
 
     default List<ResourceDO> selectByNameLike(String name) {
-        if(StrUtil.isEmpty(name)) {
+        if (StrUtil.isEmpty(name)) {
             return selectList(ORDER_BY_NAME_WRAPPER);
         }
         return selectList(queryWrapperByNameLike(name));
@@ -38,7 +38,7 @@ public interface ResourceMapper extends BaseMapper<ResourceDO> {
     default ResourceDO selectOneByName(String name) {
         List<ResourceDO> list = selectList(Wrappers.<ResourceDO>lambdaQuery()
                 .eq(ResourceDO::getName, name));
-        if(CollectionUtil.isEmpty(list)) {
+        if (CollectionUtil.isEmpty(list)) {
             return null;
         }
         return list.get(0);
