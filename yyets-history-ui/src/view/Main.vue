@@ -260,16 +260,10 @@
         if (this.searchForm.name) {
           this.searchForm.name = this.searchForm.name.trim();
         }
-        let queryParams = '';
-        let i = 0;
-        for (let key in this.searchForm) {
-          let prefix = i === 0 ? '?' : '&';
-          queryParams += `${prefix}${key}=${this.searchForm[key]}`;
-          i++;
-        }
-        let uri = baseUri + queryParams;
         this.loading = true;
-        this.$axios.get(uri).then(response => {
+        this.$axios.get(baseUri, {
+          params: this.searchForm
+        }).then(response => {
           this.loading = false;
           let data = response.data;
           this.tableData = data.list;
